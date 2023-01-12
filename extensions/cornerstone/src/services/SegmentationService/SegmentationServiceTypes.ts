@@ -73,7 +73,7 @@ type SegmentationSchema = {
   // the type of the segmentation (e.g., Labelmap etc.)
   type: csToolsEnums.SegmentationRepresentations;
   // the volume id of the volume that the labelmap is associated with, this only exists for the labelmap representation
-  volumeId: string;
+  volumeId?: string;
   // the referenced volumeURI for the segmentation
   referencedVolumeURI: string;
   // whether the segmentation is hydrated or not (non-hydrated SEG -> temporary segmentation for display in SEG Viewport

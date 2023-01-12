@@ -27,6 +27,7 @@ import {
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
+const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
 const EVENTS = {
   // fired when the segmentation is updated (e.g. when a segment is added, removed, or modified, locked, visibility changed etc.)
@@ -510,6 +511,86 @@ class SegmentationService {
     return segmentation.id;
   }
 
+  public addOrUpdateContour(
+    segmentationSchema: SegmentationSchema,
+    suppressEvents = false,
+    notYetUpdatedAtSource = false
+  ): string {
+    const { id: segmentationId } = segmentationSchema;
+    let segmentation = this.segmentations[segmentationId];
+    if (segmentation) {
+      // Update the segmentation (mostly for assigning metadata/labels)
+      Object.assign(segmentation, segmentationSchema);
+
+      this._updateCornerstoneSegmentations({
+        segmentationId,
+        notYetUpdatedAtSource,
+      });
+
+      if (!suppressEvents) {
+        this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+          segmentation,
+        });
+      }
+
+      return segmentationId;
+    }
+
+    // Add the segmentation otherwise
+    cstSegmentation.addSegmentations([
+      {
+        segmentationId,
+        representation: {
+          type: CONTOUR,
+          // Todo: need to be generalized
+          data: {
+            volumeId: segmentationId,
+          },
+        },
+      },
+    ]);
+
+    // Define a new color LUT and associate it with this segmentation.
+
+    // Todo: need to be generalized to accept custom color LUTs
+    const newColorLUT = this.generateNewColorLUT();
+    const newColorLUTIndex = this.getNextColorLUTIndex();
+
+    cstSegmentation.config.color.addColorLUT(newColorLUT, newColorLUTIndex);
+
+    if (
+      segmentationSchema.label === undefined ||
+      segmentationSchema.label === ''
+    ) {
+      segmentationSchema.label = 'Segmentation';
+    }
+
+    this.segmentations[segmentationId] = {
+      ...segmentationSchema,
+      segments: segmentationSchema.segments || [null],
+      activeSegmentIndex: segmentationSchema.activeSegmentIndex ?? null,
+      segmentCount: segmentationSchema.segmentCount ?? 0,
+      isActive: false,
+      colorLUTIndex: newColorLUTIndex,
+      isVisible: true,
+    };
+
+    segmentation = this.segmentations[segmentationId];
+
+    this._updateCornerstoneSegmentations({
+      segmentationId,
+      notYetUpdatedAtSource: true,
+    });
+
+    if (!suppressEvents) {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+        segmentation,
+      });
+    }
+
+    return segmentation.id;
+  }
+
   public async createSegmentationForSEGDisplaySet(
     segDisplaySet,
     segmentationId?: string,
@@ -544,7 +625,7 @@ class SegmentationService {
     const segmentation = this.getSegmentation(segmentationId);
 
     if (labelmap && segmentation) {
-      // if the labalemap with the same segmentationId already exists, we can
+      // if the labelmap with the same segmentationId already exists, we can
       // just assume that the segmentation is already created and move on with
       // updating the state
       return this.addOrUpdateSegmentation(
@@ -726,6 +807,89 @@ class SegmentationService {
     });
 
     return this.addOrUpdateSegmentation(segmentationSchema, suppressEvents);
+  }
+
+  public async createSegmentationForRTDisplaySet(
+    rtDisplaySet,
+    segmentationId?: string,
+    suppressEvents = false
+  ): Promise<string> {
+    const rtContourId = segmentationId ?? rtDisplaySet.displaySetInstanceUID;
+    const { structureSet } = rtDisplaySet;
+
+    if (!structureSet) {
+      throw new Error(
+        'To create the contours from RT displaySet, the displaySet should be loaded first, you can perform rtDisplaySet.load() before calling this method.'
+      );
+    }
+
+    const segmentationSchema: SegmentationSchema = {
+      id: rtContourId,
+      volumeId: rtContourId,
+      displaySetInstanceUID: rtDisplaySet.displaySetInstanceUID,
+      referencedVolumeURI: rtDisplaySet.referencedVolumeURI,
+      activeSegmentIndex: 1,
+      cachedStats: {},
+      label: '',
+      segmentsLocked: [],
+      type: CONTOUR,
+      displayText: [],
+      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
+      segmentCount: 0,
+      segments: [],
+    };
+
+    const contour = this.getContour(rtContourId);
+
+    if (contour) {
+      // if the labelmap with the same segmentationId already exists, we can
+      // just assume that the segmentation is already created and move on with
+      // updating the state
+      return this.addOrUpdateContour(
+        Object.assign(segmentationSchema, contour),
+        suppressEvents
+      );
+    }
+
+    const numSegments = Object.keys(structureSet.ROIContours).length;
+    segmentationSchema.segmentCount = numSegments;
+    const contours = [];
+    const pointSize = 24; // considering 3 double numbers (3 * 8 bytes)
+    let sizeInBytes = 0;
+    for (let i = 0; i < numSegments; i++) {
+      const contourPoints = structureSet.ROIContours[i].contourPoints;
+      for (let j = 0; j < contourPoints.length; j++) {
+        sizeInBytes = sizeInBytes + pointSize * contourPoints[j].points.length;
+      }
+      const actor = cstSegmentation.createPolyData(structureSet.ROIContours[i]);
+      contours.push(actor);
+
+      segmentationSchema.segments[i] = {
+        label: structureSet.ROIContours[i].ROIName,
+        segmentIndex: i,
+        color: structureSet.ROIContours[i].colorArray,
+        opacity: 255,
+        isVisible: true,
+        isLocked: false,
+      };
+
+      this._broadcastEvent(EVENTS.SEGMENT_PIXEL_DATA_CREATED, {
+        segmentIndex: Number(i),
+        numSegments,
+      });
+    }
+
+    rtDisplaySet.isLoaded = true;
+    const overlappingSegments = false;
+    cache.addContour(rtContourId, contours, sizeInBytes);
+
+    this._broadcastEvent(EVENTS.SEGMENTATION_PIXEL_DATA_CREATED, {
+      segmentationId,
+      rtDisplaySet,
+      overlappingSegments,
+    });
+
+    return this.addOrUpdateContour(segmentationSchema, suppressEvents);
   }
 
   public jumpToSegmentCenter(
@@ -1270,6 +1434,14 @@ class SegmentationService {
 
   public getLabelmapVolume = (segmentationId: string) => {
     return cache.getVolume(segmentationId);
+  };
+
+  public getSegmentationRepresentationsForToolGroup = toolGroupId => {
+    return cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
+  };
+
+  public getContour = (contourId: string) => {
+    return cache.getContour(contourId);
   };
 
   public getSegmentationRepresentationsForToolGroup = toolGroupId => {

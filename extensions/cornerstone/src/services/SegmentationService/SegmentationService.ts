@@ -24,6 +24,7 @@ import {
   SegmentationConfig,
   SegmentationSchema,
 } from './SegmentationServiceTypes';
+import { segmentation } from '@cornerstonejs/tools/dist/esm/utilities';
 
 const { COLOR_LUT } = cstConstants;
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -861,8 +862,10 @@ class SegmentationService {
       for (let j = 0; j < contourPoints.length; j++) {
         sizeInBytes = sizeInBytes + pointSize * contourPoints[j].points.length;
       }
-      const actor = cstSegmentation.createPolyData(structureSet.ROIContours[i]);
-      contours.push(actor);
+      const actors = cstSegmentation.createPolyDataActors(
+        structureSet.ROIContours[i]
+      );
+      contours.push(actors);
 
       segmentationSchema.segments[i] = {
         label: structureSet.ROIContours[i].ROIName,
@@ -1246,17 +1249,23 @@ class SegmentationService {
     toolGroupId: string,
     segmentationIds?: string[]
   ): void {
-    segmentationIds =
-      segmentationIds ??
-      cstSegmentation.state
-        .getSegmentationRepresentations(toolGroupId)
-        .map(rep => rep.segmentationRepresentationUID);
-
-    cstSegmentation.removeSegmentationsFromToolGroup(
-      toolGroupId,
-      segmentationIds,
-      true // immediate render
-    );
+    if (!segmentationIds) {
+      const segmentationRepresentation = cstSegmentation.state.getSegmentationRepresentations(
+        toolGroupId
+      );
+      if (segmentationRepresentation) {
+        segmentationIds = segmentationRepresentation.map(
+          rep => rep.segmentationRepresentationUID
+        );
+      }
+    }
+    if (segmentationIds) {
+      cstSegmentation.removeSegmentationsFromToolGroup(
+        toolGroupId,
+        segmentationIds,
+        true // immediate render
+      );
+    }
   }
 
   /**

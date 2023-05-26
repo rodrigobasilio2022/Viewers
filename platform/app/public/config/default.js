@@ -48,10 +48,15 @@ window.config = {
         // wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
 
         // new server
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-
+        //wadoUriRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        //qidoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        //wadoRoot: 'https://domvja9iplmyu.cloudfront.net/dicomweb',
+        // wadoUriRoot: 'https://d3dka82f78ob9d.cloudfront.net/dicomweb',
+        // qidoRoot: 'https://d3dka82f78ob9d.cloudfront.net/dicomweb',
+        // wadoRoot: 'https://d3dka82f78ob9d.cloudfront.net/dicomweb',
+        wadoUriRoot: 'http://localhost:5000/dicomweb',
+        qidoRoot: 'http://localhost:5000/dicomweb',
+        wadoRoot: 'http://localhost:5000/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',

@@ -296,12 +296,16 @@ const toolbarButtons = [
   },
   {
     id: 'DeepLook',
-    type: 'ohif.radioGroup',
+    type: 'ohif.action',
     props: {
-      type: 'tool',
+      type: 'toggle',
       icon: 'tool-probe',
       label: 'DeepLook',
-      commands: _createSetToolActiveCommands('DeepLookTool'),
+      commands: [
+        {
+          commandName: 'toggleMassView',
+        },
+      ],
     },
   },
   {

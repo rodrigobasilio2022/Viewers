@@ -1,11 +1,13 @@
 import { id } from './id';
 import DeepLookTool from './tools/deepLookTool';
 import preRegistration from './init/preRegistration';
+import commandsModule from './commandsModule';
+import { Types } from '@ohif/core';
 
 /**
  * You can remove any of the following modules if you don't need them.
  */
-export default {
+const deepLookExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    * You ID can be anything you want, but it should be unique.
@@ -95,11 +97,19 @@ export default {
    * object of functions, definitions is an object of available commands, their
    * options, and defaultContext is the default context for the command to run against.
    */
-  getCommandsModule: ({
+  getCommandsModule({
     servicesManager,
     commandsManager,
     extensionManager,
-  }) => {},
+    appConfig,
+  }) {
+    return commandsModule({
+      servicesManager,
+      commandsManager,
+      extensionManager,
+      appConfig,
+    });
+  },
   /**
    * ContextModule should provide a list of context that will be available in OHIF
    * and will be provided to the Modes. A context is a state that is shared OHIF.
@@ -124,3 +134,4 @@ export default {
 };
 
 export { DeepLookTool };
+export default deepLookExtension;

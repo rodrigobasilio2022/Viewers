@@ -299,7 +299,7 @@ const toolbarButtons = [
     type: 'ohif.action',
     props: {
       type: 'toggle',
-      icon: 'tool-probe',
+      icon: 'tool-create-threshold',
       label: 'DeepLook',
       commands: [
         {

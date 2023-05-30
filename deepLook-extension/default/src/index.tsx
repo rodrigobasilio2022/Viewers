@@ -3,6 +3,7 @@ import DeepLookTool from './tools/deepLookTool';
 import preRegistration from './init/preRegistration';
 import commandsModule from './commandsModule';
 import { Types } from '@ohif/core';
+import deepLookMouseBindings from './mouseBindings';
 
 /**
  * You can remove any of the following modules if you don't need them.
@@ -133,5 +134,5 @@ const deepLookExtension: Types.Extensions.Extension = {
   }) => {},
 };
 
-export { DeepLookTool };
+export { DeepLookTool, deepLookMouseBindings };
 export default deepLookExtension;

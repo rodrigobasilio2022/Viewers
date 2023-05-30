@@ -1,5 +1,4 @@
-import { DeepLookTool } from '@deeplook/extension-default';
-
+import { deepLookMouseBindings } from '@deeplook/extension-default';
 function initDefaultToolGroup(
   extensionManager,
   toolGroupService,
@@ -16,15 +15,17 @@ function initDefaultToolGroup(
     active: [
       {
         toolName: toolNames.WindowLevel,
-        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+        bindings: [
+          { mouseButton: deepLookMouseBindings(toolNames.WindowLevel) },
+        ],
       },
       {
         toolName: toolNames.Pan,
-        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+        bindings: [{ mouseButton: deepLookMouseBindings(toolNames.Pan) }],
       },
       {
         toolName: toolNames.Zoom,
-        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+        bindings: [{ mouseButton: deepLookMouseBindings(toolNames.Zoom) }],
       },
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
@@ -46,10 +47,7 @@ function initDefaultToolGroup(
     ],
     // enabled
     // disabled
-    disabled: [
-      { toolName: toolNames.ReferenceLines },
-      { toolName: DeepLookTool.toolName },
-    ],
+    disabled: [{ toolName: toolNames.ReferenceLines }],
   };
 
   const toolsConfig = {
@@ -128,7 +126,6 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
     ],
     // disabled
-    disabled: [{ toolName: DeepLookTool.toolName }],
   };
 
   const toolsConfig = {
@@ -192,7 +189,6 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     disabled: [
       { toolName: toolNames.Crosshairs },
       { toolName: toolNames.ReferenceLines },
-      { toolName: DeepLookTool.toolName },
     ],
 
     // enabled

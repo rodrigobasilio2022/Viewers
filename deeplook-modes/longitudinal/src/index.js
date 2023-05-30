@@ -69,8 +69,8 @@ function modeFactory() {
     // TODO: We're using this as a route segment
     // We should not be.
     id,
-    routeName: 'deeplook',
-    displayName: 'Deeplook Viewer',
+    routeName: 'viewer',
+    displayName: 'Basic Viewer',
     /**
      * Lifecycle hooks
      */

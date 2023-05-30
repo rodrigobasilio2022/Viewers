@@ -92,14 +92,14 @@ function modeFactory() {
 
       const activateTool = () => {
         toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
+          groupId: 'Zoom',
+          itemId: 'Zoom',
           interactionType: 'tool',
           commands: [
             {
               commandName: 'setToolActive',
               commandOptions: {
-                toolName: 'WindowLevel',
+                toolName: 'Zoom',
               },
               context: 'CORNERSTONE',
             },

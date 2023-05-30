@@ -18,6 +18,7 @@ const commandsModule = ({
     cornerstoneViewportService,
     uiNotificationService,
   } = servicesManager.services;
+  let lastToolNameDisabled: string | undefined;
 
   /**
    * Gets the imageIds list based on the type of the viewport
@@ -77,12 +78,20 @@ const commandsModule = ({
 
   function deactivateMouseBindings() {
     const toolGroup = getToolGroup();
-    toolGroup.setToolDisabled('WindowLevel');
+    lastToolNameDisabled = toolGroup.getActivePrimaryMouseButtonTool();
+    if (lastToolNameDisabled) {
+      toolGroup.setToolDisabled(lastToolNameDisabled);
+    }
     return;
   }
 
   function activateMouseBindings() {
-    commandsManager.runCommand('setToolActive', { toolName: 'WindowLevel' });
+    if (lastToolNameDisabled) {
+      commandsManager.runCommand('setToolActive', {
+        toolName: lastToolNameDisabled,
+      });
+      lastToolNameDisabled = undefined;
+    }
     return;
   }
 

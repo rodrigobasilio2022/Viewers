@@ -1,8 +1,7 @@
 import { Types as OhifTypes } from '@ohif/core';
 import deepLookIntegration from './helpers/deepLookIntegration';
 import { metaData, cache, StackViewport } from '@cornerstonejs/core';
-import Length from '../../../extensions/cornerstone/src/utils/measurementServiceMappings/Length';
-import UINotificationService from '../../../platform/core/src/services/UINotificationService/index';
+import deepLookMouseBindings from './mouseBindings';
 
 const defaultContext = 'CORNERSTONE';
 
@@ -18,7 +17,7 @@ const commandsModule = ({
     cornerstoneViewportService,
     uiNotificationService,
   } = servicesManager.services;
-  let lastToolNameDisabled: string | undefined;
+  let lastToolNameDisabled;
 
   /**
    * Gets the imageIds list based on the type of the viewport
@@ -90,6 +89,18 @@ const commandsModule = ({
       commandsManager.runCommand('setToolActive', {
         toolName: lastToolNameDisabled,
       });
+
+      const mouseBinding = deepLookMouseBindings(lastToolNameDisabled);
+      if (mouseBinding) {
+        const toolGroup = getToolGroup();
+        toolGroup.setToolActive(lastToolNameDisabled, {
+          bindings: [
+            {
+              mouseButton: mouseBinding,
+            },
+          ],
+        });
+      }
       lastToolNameDisabled = undefined;
     }
     return;

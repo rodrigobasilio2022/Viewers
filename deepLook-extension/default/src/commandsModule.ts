@@ -97,8 +97,7 @@ const commandsModule = ({
       }
       const canvasPos = activeViewport.worldToCanvas(worldPos);
       const pixelMM = Math.ceil(
-        100 *
-          Math.max(Math.abs(canvasPos[0] - xPos), Math.abs(canvasPos[1] - yPos))
+        Math.max(Math.abs(canvasPos[0] - xPos), Math.abs(canvasPos[1] - yPos))
       );
       return {
         insideImageFrame: 1,

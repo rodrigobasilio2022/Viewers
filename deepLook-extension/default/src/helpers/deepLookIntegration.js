@@ -5,6 +5,9 @@ class deepLookIntegration {
     activateMouseBindings,
     deactivateMouseBindings,
     connectionStatus,
+    openCallback,
+    errorCallback,
+    closeCallback,
     ip = 'localhost'
   ) {
     this.serverIp = ip;
@@ -15,6 +18,9 @@ class deepLookIntegration {
     this.connectionStatus = connectionStatus;
     this.safeCloseWebSocket = false;
     this.connectionOpened = false;
+    this.openCallback = openCallback;
+    this.errorCallback = errorCallback;
+    this.closeCallback = closeCallback;
   }
 
   getXML(elementTag, xml) {
@@ -88,11 +94,17 @@ class deepLookIntegration {
         false,
         'DeepLook connection could not be established properly'
       );
+      if (this.errorCallback) {
+        this.errorCallback();
+      }
     });
 
     this.webSocket.addEventListener('open', event => {
       this.processLog(true, 'DeepLook connection established successfully');
       this.connectionOpened = true;
+      if (this.openCallback) {
+        this.openCallback();
+      }
     });
 
     this.webSocket.addEventListener('close', event => {
@@ -101,6 +113,9 @@ class deepLookIntegration {
       }
       this.safeCloseWebSocket = false;
       this.connectionOpened = false;
+      if (this.closeCallback) {
+        this.closeCallback();
+      }
     });
 
     this.webSocket.addEventListener('message', event => {

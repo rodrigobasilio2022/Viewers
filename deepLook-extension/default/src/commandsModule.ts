@@ -4,6 +4,7 @@ import { metaData, cache, StackViewport } from '@cornerstonejs/core';
 import deepLookMouseBindings from './mouseBindings';
 
 const defaultContext = 'CORNERSTONE';
+const oldCalculation = false;
 
 const commandsModule = ({
   servicesManager,
@@ -57,18 +58,99 @@ const commandsModule = ({
     };
   }
 
+  function getOrientation(viewport) {
+    const normalVector = viewport.getCamera().viewPlaneNormal;
+    let largestAxis = 0;
+    for (let i = 1; i < normalVector.length; i++) {
+      if (Math.abs(normalVector[i]) > Math.abs(normalVector[largestAxis])) {
+        largestAxis = i;
+      }
+    }
+    return largestAxis;
+  }
+
   function getPixelMM(xPos, yPos) {
     const { cornerstoneViewport: activeViewport } = getActiveViewport();
-    const imageIds = getImageIds(activeViewport);
-    if (imageIds && imageIds.length > 0) {
-      const imagePlaneModule = metaData.get('imagePlaneModule', imageIds[0]);
-      const pixelMM = Math.ceil(imagePlaneModule.pixelSpacing[0] * 100);
+    if (oldCalculation) {
+      const imageIds = getImageIds(activeViewport);
+      if (imageIds && imageIds.length > 0) {
+        const imagePlaneModule = metaData.get('imagePlaneModule', imageIds[0]);
+        const pixelMM = Math.ceil(imagePlaneModule.pixelSpacing[0] * 100);
+        return {
+          insideImageFrame: 1,
+          pixelMM,
+        };
+      }
+      return { insideImageFrame: 0, pixelMM: 0 };
+    } else {
+      const imageIds = getImageIds(activeViewport);
+      let imagePlaneModule;
+      if (imageIds && imageIds.length > 0) {
+        imagePlaneModule = metaData.get('imagePlaneModule', imageIds[0]);
+      }
+      const worldPos = activeViewport.canvasToWorld([xPos, yPos]);
+      const orientation = getOrientation(activeViewport);
+      if (orientation === 0) {
+        worldPos[1] = worldPos[1] + 1;
+      } else {
+        worldPos[0] = worldPos[0] + 1;
+      }
+      const canvasPos = activeViewport.worldToCanvas(worldPos);
+      const pixelMM = Math.ceil(
+        100 *
+          Math.max(Math.abs(canvasPos[0] - xPos), Math.abs(canvasPos[1] - yPos))
+      );
       return {
         insideImageFrame: 1,
         pixelMM,
       };
     }
-    return { insideImageFrame: 0, pixelMM: 0 };
+  }
+
+  function checkDeepLookIsOpened() {
+    if (!deepLookIntegrationObject.isConnected()) {
+      setTimeout(() => {
+        callDeepLookURL();
+      }, 3000);
+    }
+  }
+
+  function callDeepLookURL() {
+    if (!deepLookIntegrationObject.isConnected()) {
+      const deepLookURL = 'deeplook://open';
+      const link = document.createElement('a');
+      link.href = deepLookURL;
+      link.click();
+    }
+  }
+
+  function checkConnection() {
+    setTimeout(() => {
+      _checkConnection();
+    }, 1000);
+  }
+
+  function _checkConnection() {
+    if (!deepLookIntegrationObject.isConnected()) {
+      deepLookIntegrationObject.openWebSocket();
+    }
+    setTimeout(() => {
+      checkConnection();
+    }, 7000);
+  }
+
+  function openCallback() {
+    return;
+  }
+
+  function errorCallback() {
+    activateMouseBindings();
+    return;
+  }
+
+  function closeCallback() {
+    activateMouseBindings();
+    return;
   }
 
   function getToolGroup() {
@@ -108,13 +190,19 @@ const commandsModule = ({
   }
 
   const deepLookIntegrationObject = new deepLookIntegration(
-    getPixelMM.bind(viewportGridService, metaData, getImageIds),
+    getPixelMM,
     activateMouseBindings,
     deactivateMouseBindings,
-    messageStatus
+    messageStatus,
+    openCallback,
+    errorCallback,
+    closeCallback
   );
 
   const actions = {
+    openDeepLook() {
+      checkDeepLookIsOpened();
+    },
     openDeepLookConnection() {
       deepLookIntegrationObject.openWebSocket();
       return deepLookIntegrationObject.isConnected();
@@ -131,6 +219,9 @@ const commandsModule = ({
   };
 
   const definitions = {
+    openDeepLook: {
+      commandFn: actions.openDeepLook,
+    },
     openDeepLookConnection: {
       commandFn: actions.openDeepLookConnection,
     },
@@ -144,6 +235,8 @@ const commandsModule = ({
       commandFn: actions.showDeepLookMessage,
     },
   };
+  checkDeepLookIsOpened();
+  checkConnection();
 
   return { actions, defaultContext, definitions };
 };

@@ -303,7 +303,7 @@ const toolbarButtons = [
       label: 'DeepLook connection',
       commands: [
         {
-          commandName: 'openDeepLookConnection',
+          commandName: 'openDeepLook',
         },
       ],
     },

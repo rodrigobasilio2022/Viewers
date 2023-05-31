@@ -79,9 +79,16 @@ function modeFactory() {
         measurementService,
         toolbarService,
         toolGroupService,
-        panelService,
-        segmentationService,
       } = servicesManager.services;
+
+      if (!commandsManager.runCommand('isDeepLookConnected', {})) {
+        commandsManager.runCommand('openDeepLookConnection', {});
+      } else {
+        commandsManager.runCommand('showDeepLookMessage', {
+          isInfoMessage: true,
+          message: 'DeepLook connection established successfully',
+        });
+      }
 
       measurementService.clearMeasurements();
 

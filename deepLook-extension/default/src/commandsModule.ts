@@ -62,9 +62,10 @@ const commandsModule = ({
     const imageIds = getImageIds(activeViewport);
     if (imageIds && imageIds.length > 0) {
       const imagePlaneModule = metaData.get('imagePlaneModule', imageIds[0]);
+      const pixelMM = Math.ceil(imagePlaneModule.pixelSpacing[0] * 100);
       return {
         insideImageFrame: 1,
-        pixelMM: Math.ceil(imagePlaneModule.pixelSpacing * 100),
+        pixelMM,
       };
     }
     return { insideImageFrame: 0, pixelMM: 0 };
@@ -112,20 +113,35 @@ const commandsModule = ({
     deactivateMouseBindings,
     messageStatus
   );
-  deepLookIntegrationObject.openWebSocket();
+
   const actions = {
-    toggleMassView({ toggledState }) {
-      if (toggledState) {
-        deepLookIntegrationObject.openWebSocket();
-      } else {
-        deepLookIntegrationObject.closeWebSocket();
-      }
+    openDeepLookConnection() {
+      deepLookIntegrationObject.openWebSocket();
+      return deepLookIntegrationObject.isConnected();
+    },
+    isDeepLookConnected() {
+      return deepLookIntegrationObject.isConnected();
+    },
+    closeDeepLookConnection() {
+      deepLookIntegrationObject.closeWebSocket();
+    },
+    showDeepLookMessage({ isInfoMessage, message }) {
+      messageStatus(isInfoMessage, message);
     },
   };
 
   const definitions = {
-    toggleMassView: {
-      commandFn: actions.toggleMassView,
+    openDeepLookConnection: {
+      commandFn: actions.openDeepLookConnection,
+    },
+    closeDeepLookConnection: {
+      commandFn: actions.closeDeepLookConnection,
+    },
+    isDeepLookConnected: {
+      commandFn: actions.isDeepLookConnected,
+    },
+    showDeepLookMessage: {
+      commandFn: actions.showDeepLookMessage,
     },
   };
 

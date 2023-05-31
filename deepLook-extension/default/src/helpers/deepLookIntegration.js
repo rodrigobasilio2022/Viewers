@@ -70,22 +70,33 @@ class deepLookIntegration {
     this.webSocket.send(params);
   }
 
+  processLog(isInfoMessage, message) {
+    console.log(message);
+    this.connectionStatus(isInfoMessage, message);
+  }
+
   openWebSocket() {
     this.webSocket = new WebSocket('ws://' + this.serverIp + ':44458');
-
+    if (!this.webSocket) {
+      this.connectionStatus(
+        false,
+        'Could not open a connection to dlPrecise Web Socket'
+      );
+      return;
+    }
     this.webSocket.addEventListener('error', event => {
-      console.log('dlPrecise Socket open failed');
-      this.connectionStatus(false, 'dlPrecise Socket open failed');
+      this.processLog(
+        false,
+        'DeepLook connection could not be established properly'
+      );
     });
 
     this.webSocket.addEventListener('open', event => {
-      console.log('dlPrecise Socket open success');
-      this.connectionStatus(true, 'dlPrecise Socket open success');
+      this.processLog(true, 'DeepLook connection established successfully');
     });
 
     this.webSocket.addEventListener('close', event => {
-      console.log('dlPrecise Socket close');
-      this.connectionStatus(true, 'dlPrecise Socket close');
+      console.log('DeepLook connection closed');
     });
 
     this.webSocket.addEventListener('message', event => {
@@ -93,8 +104,12 @@ class deepLookIntegration {
     });
   }
 
+  isConnected() {
+    return this.webSocket && this.webSocket.readyState === WebSocket.OPEN;
+  }
+
   closeWebSocket() {
-    if (this.webSocket && this.webSocket.readyState == WebSocket.OPEN) {
+    if (this.isConnected()) {
       this.webSocket.close();
     }
   }

@@ -13,6 +13,8 @@ class deepLookIntegration {
     this.activateMouseBindings = activateMouseBindings;
     this.deactivateMouseBindings = deactivateMouseBindings;
     this.connectionStatus = connectionStatus;
+    this.safeCloseWebSocket = false;
+    this.connectionOpened = false;
   }
 
   getXML(elementTag, xml) {
@@ -93,10 +95,15 @@ class deepLookIntegration {
 
     this.webSocket.addEventListener('open', event => {
       this.processLog(true, 'DeepLook connection established successfully');
+      this.connectionOpened = true;
     });
 
     this.webSocket.addEventListener('close', event => {
-      console.log('DeepLook connection closed');
+      if (!this.safeCloseWebSocket && this.connectionOpened) {
+        this.processLog(false, 'DeepLook connection lost.');
+      }
+      this.safeCloseWebSocket = false;
+      this.connectionOpened = false;
     });
 
     this.webSocket.addEventListener('message', event => {
@@ -110,6 +117,7 @@ class deepLookIntegration {
 
   closeWebSocket() {
     if (this.isConnected()) {
+      this.safeCloseWebSocket = true;
       this.webSocket.close();
     }
   }

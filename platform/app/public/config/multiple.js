@@ -12,7 +12,7 @@ window.config = {
     },
   ],
   extensions: [],
-  modes: [],
+  modes: ['@deeplook/mode-longitudinal'],
   showStudyList: true,
   maxNumberOfWebWorkers: 4,
   // below flag is for performance reasons, but it might not work for all servers

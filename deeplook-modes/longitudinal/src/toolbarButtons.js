@@ -298,12 +298,12 @@ const toolbarButtons = [
     id: 'DeepLook',
     type: 'ohif.action',
     props: {
-      type: 'toggle',
+      type: 'action',
       icon: 'tool-create-threshold',
-      label: 'DeepLook',
+      label: 'DeepLook connection',
       commands: [
         {
-          commandName: 'toggleMassView',
+          commandName: 'openDeepLookConnection',
         },
       ],
     },

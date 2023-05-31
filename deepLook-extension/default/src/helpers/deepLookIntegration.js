@@ -80,10 +80,7 @@ class deepLookIntegration {
   openWebSocket() {
     this.webSocket = new WebSocket('ws://' + this.serverIp + ':44458');
     if (!this.webSocket) {
-      this.connectionStatus(
-        false,
-        'Could not open a connection to dlPrecise Web Socket'
-      );
+      this.connectionStatus(false, 'Could not open a connection to DeepLook');
       return;
     }
     this.webSocket.addEventListener('error', event => {

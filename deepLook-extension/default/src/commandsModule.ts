@@ -4,7 +4,7 @@ import { metaData, cache, StackViewport } from '@cornerstonejs/core';
 import deepLookMouseBindings from './mouseBindings';
 
 const defaultContext = 'CORNERSTONE';
-const oldCalculation = false;
+const oldCalculation = true;
 
 const commandsModule = ({
   servicesManager,
@@ -44,7 +44,7 @@ const commandsModule = ({
       title: 'DeepLook integration',
       message: message,
       type: isInfoMessage ? 'info' : 'error',
-      duration: 3000,
+      duration: 2000,
     });
   }
 
@@ -75,7 +75,11 @@ const commandsModule = ({
       const imageIds = getImageIds(activeViewport);
       if (imageIds && imageIds.length > 0) {
         const imagePlaneModule = metaData.get('imagePlaneModule', imageIds[0]);
-        const pixelMM = Math.ceil(imagePlaneModule.pixelSpacing[0] * 100);
+        const zoom = activeViewport.getZoom();
+        const pixelMMDicom = 1 / imagePlaneModule.pixelSpacing[0];
+        const pixelMMScreen = pixelMMDicom / zoom;
+        const pixelMM = Math.ceil(pixelMMScreen * 100);
+        console.log('PixelMM returned: ', pixelMMScreen);
         return {
           insideImageFrame: 1,
           pixelMM,
@@ -126,7 +130,7 @@ const commandsModule = ({
   function checkConnection() {
     setTimeout(() => {
       _checkConnection();
-    }, 1000);
+    }, 500);
   }
 
   function _checkConnection() {
@@ -135,7 +139,7 @@ const commandsModule = ({
     }
     setTimeout(() => {
       checkConnection();
-    }, 7000);
+    }, 3000);
   }
 
   function openCallback() {
@@ -202,18 +206,8 @@ const commandsModule = ({
     openDeepLook() {
       checkDeepLookIsOpened();
     },
-    openDeepLookConnection() {
-      deepLookIntegrationObject.openWebSocket();
-      return deepLookIntegrationObject.isConnected();
-    },
     isDeepLookConnected() {
       return deepLookIntegrationObject.isConnected();
-    },
-    closeDeepLookConnection() {
-      deepLookIntegrationObject.closeWebSocket();
-    },
-    showDeepLookMessage({ isInfoMessage, message }) {
-      messageStatus(isInfoMessage, message);
     },
   };
 
@@ -221,17 +215,8 @@ const commandsModule = ({
     openDeepLook: {
       commandFn: actions.openDeepLook,
     },
-    openDeepLookConnection: {
-      commandFn: actions.openDeepLookConnection,
-    },
-    closeDeepLookConnection: {
-      commandFn: actions.closeDeepLookConnection,
-    },
     isDeepLookConnected: {
       commandFn: actions.isDeepLookConnected,
-    },
-    showDeepLookMessage: {
-      commandFn: actions.showDeepLookMessage,
     },
   };
   checkDeepLookIsOpened();

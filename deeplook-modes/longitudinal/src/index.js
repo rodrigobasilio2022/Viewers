@@ -81,15 +81,6 @@ function modeFactory() {
         toolGroupService,
       } = servicesManager.services;
 
-      if (!commandsManager.runCommand('isDeepLookConnected', {})) {
-        commandsManager.runCommand('openDeepLookConnection', {});
-      } else {
-        commandsManager.runCommand('showDeepLookMessage', {
-          isInfoMessage: true,
-          message: 'DeepLook connection established successfully',
-        });
-      }
-
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
@@ -184,7 +175,7 @@ function modeFactory() {
       series: [],
     },
 
-    isValidMode: function({ modalities }) {
+    isValidMode: function ({ modalities }) {
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities

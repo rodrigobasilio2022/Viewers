@@ -78,7 +78,7 @@ const commandsModule = ({
         const zoom = activeViewport.getZoom();
         const pixelMMDicom = 1 / imagePlaneModule.pixelSpacing[0];
         const pixelMMScreen = pixelMMDicom / zoom;
-        const pixelMM = Math.ceil(pixelMMScreen * 100);
+        const pixelMM = Math.ceil(pixelMMScreen * 100000);
         console.log('PixelMM returned: ', pixelMMScreen);
         return {
           insideImageFrame: 1,

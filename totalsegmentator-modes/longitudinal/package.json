@@ -1,6 +1,6 @@
 {
-  "name": "longitudinal",
-  "version": "0.0.1",
+  "name": "@totalsegmentator/mode-longitudinal",
+  "version": "3.0.0",
   "description": "Mode for TotalSegmentator",
   "author": "Rodrigo Basilio",
   "license": "MIT",

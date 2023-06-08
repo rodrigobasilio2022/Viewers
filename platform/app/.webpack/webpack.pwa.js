@@ -81,6 +81,14 @@ module.exports = (env, argv) => {
           __dirname,
           'totalsegmentator-modeslongitudinal\node_modules'
         ),
+        path.resolve(
+          __dirname,
+          'totalsegmentator-modeslongitudinal\node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          'totalsegmentator-extensiondefault\node_modules'
+        ),
       ],
     },
     plugins: [

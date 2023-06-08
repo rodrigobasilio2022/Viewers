@@ -68,6 +68,19 @@ class totalSegmentatorIntegration {
     });
   }
 
+  sendRequest(dicomWebURL, dicomWebSufix, studyInstanceUID, seriesInstanceUID) {
+    if (this.isConnected()) {
+      const dicomWebInfo = {
+        url: dicomWebURL,
+        suffix: dicomWebSufix,
+        studyUID: studyInstanceUID,
+        seriesUID: seriesInstanceUID,
+      };
+
+      this.webSocket.send(JSON.stringify(dicomWebInfo));
+    }
+  }
+
   isConnected() {
     return this.webSocket && this.webSocket.readyState === WebSocket.OPEN;
   }

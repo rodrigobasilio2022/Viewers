@@ -17,6 +17,17 @@ const commandsModule = ({
     uiNotificationService,
   } = servicesManager.services;
 
+  function getDicomWebClient() {
+    const dataSourceConfig = window.config.dataSources.find(
+      ds => ds.sourceName === extensionManager.activeDataSource
+    );
+    const { wadoRoot } = dataSourceConfig.configuration;
+    const parts = wadoRoot.split('/');
+    const dicomWebUrl = parts.slice(0, -1).join('/');
+    const dicomWebSuffix = parts.slice(-1)[0];
+    return { dicomWebUrl, dicomWebSuffix };
+  }
+
   /**
    * Gets the imageIds list based on the type of the viewport
    * @param baseViewport
@@ -95,7 +106,19 @@ const commandsModule = ({
     sendToProcess() {
       const { cornerstoneViewport: activeViewport } = getActiveViewport();
       const imageIds = getImageIds(activeViewport);
-      console.log(imageIds[0]);
+      if (imageIds.length) {
+        const { StudyInstanceUID, SeriesInstanceUID } = metaData.get(
+          'instance',
+          imageIds[0]
+        );
+        const { dicomWebUrl, dicomWebSuffix } = getDicomWebClient();
+        totalSegmentatorObject.sendRequest(
+          dicomWebUrl,
+          dicomWebSuffix,
+          StudyInstanceUID,
+          SeriesInstanceUID
+        );
+      }
     },
   };
 
@@ -107,7 +130,6 @@ const commandsModule = ({
       commandFn: actions.sendToProcess,
     },
   };
-
   return { actions, defaultContext, definitions };
 };
 

@@ -1,6 +1,6 @@
 {
-  "name": "default",
-  "version": "0.0.1",
+  "name": "@totalsegmentator/default",
+  "version": "3.0.0",
   "description": "OHIF TotalSegmentator integration",
   "author": "Rodrigo Basilio",
   "license": "MIT",

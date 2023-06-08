@@ -1,6 +1,7 @@
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
-import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
+import toolbarButtons from './toolbarButtons.js';
+import initToolGroups from './initToolGroups.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -30,12 +31,12 @@ function modeFactory({ modeConfiguration }) {
      * is used to identify the mode in the viewer's state.
      */
     id,
-    routeName: 'template',
+    routeName: 'viewer',
     /**
      * Mode name, which is displayed in the viewer's UI in the workList, for the
      * user to select the mode.
      */
-    displayName: 'Template Mode',
+    displayName: 'Basic Viewer',
     /**
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
@@ -89,6 +90,7 @@ function modeFactory({ modeConfiguration }) {
         'Zoom',
         'WindowLevel',
         'Pan',
+        'TotalSegmentator',
         'Capture',
         'Layout',
         'MPR',
@@ -134,7 +136,7 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: 'template',
+        path: 'longitudinal',
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,
@@ -155,7 +157,7 @@ function modeFactory({ modeConfiguration }) {
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
     /** HangingProtocol used by the mode */
-    // hangingProtocol: [''],
+    hangingProtocol: 'default',
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */

@@ -10,7 +10,7 @@ import {
   initGit,
 } from './utils/index.js';
 
-const createPackage = async (options) => {
+const createPackage = async options => {
   const { packageType } = options; // extension or mode
 
   if (fs.existsSync(options.targetDir)) {
@@ -21,7 +21,7 @@ const createPackage = async (options) => {
     process.exit(1);
   }
 
-  fs.mkdirSync(options.targetDir);
+  fs.mkdirSync(options.targetDir, { recursive: true });
 
   const tasks = new Listr(
     [

@@ -69,6 +69,18 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          'D:CodigosOHIFDeeplookViewers\totalsegmentator-extensiondefault\node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          'totalsegmentator-extensiondefault\node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          'totalsegmentator-modeslongitudinal\node_modules'
+        ),
       ],
     },
     plugins: [

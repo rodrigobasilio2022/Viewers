@@ -14,7 +14,7 @@
   "keywords": [
     "ohif-mode"
   ],
-  "module": "src/index.tsx",
+  "module": "src/index.js",
   "engines": {
     "node": ">=14",
     "npm": ">=6",

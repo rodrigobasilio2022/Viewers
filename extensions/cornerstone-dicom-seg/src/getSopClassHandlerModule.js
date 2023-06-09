@@ -60,6 +60,10 @@ function _getDisplaySetsFromSeries(
     isOverlayDisplaySet: true,
   };
 
+  if (instance.segArrayBuffer) {
+    displaySet.segArrayBuffer = instance.segArrayBuffer;
+  }
+
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
 
   if (!referencedSeriesSequence) {
@@ -153,11 +157,16 @@ async function _loadSegments(extensionManager, segDisplaySet, headers) {
   );
 
   const { dicomLoaderService } = utilityModule.exports;
-  const segArrayBuffer = await dicomLoaderService.findDicomDataPromise(
-    segDisplaySet,
-    null,
-    headers
-  );
+  let segArrayBuffer;
+  if (segDisplaySet.segArrayBuffer) {
+    segArrayBuffer = segDisplaySet.segArrayBuffer;
+  } else {
+    segArrayBuffer = await dicomLoaderService.findDicomDataPromise(
+      segDisplaySet,
+      null,
+      headers
+    );
+  }
 
   const dicomData = DicomMessage.readFile(segArrayBuffer);
   const dataset = DicomMetaDictionary.naturalizeDataset(dicomData.dict);

@@ -1,6 +1,7 @@
+import dcmjs from 'dcmjs';
 import { Types as OhifTypes } from '@ohif/core';
 import { metaData, cache, StackViewport } from '@cornerstonejs/core';
-import totalSegmentatorIntegration from './helpers/totalsegmentatorIntegration';
+import { DicomMetadataStore } from '@ohif/core';
 
 const defaultContext = 'CORNERSTONE';
 
@@ -15,6 +16,7 @@ const commandsModule = ({
     toolGroupService,
     cornerstoneViewportService,
     uiNotificationService,
+    displaySetService,
   } = servicesManager.services;
 
   function getDicomWebClient() {
@@ -77,55 +79,98 @@ const commandsModule = ({
     return largestAxis;
   }
 
-  function checkConnection() {
-    setTimeout(() => {
-      _checkConnection();
-    }, 500);
-  }
-
-  function _checkConnection() {
-    if (!totalSegmentatorObject.isConnected()) {
-      totalSegmentatorObject.openWebSocket();
-    }
-    setTimeout(() => {
-      checkConnection();
-    }, 3000);
-  }
-
   function getToolGroup() {
     const { ohifViewport: activeViewport } = getActiveViewport();
     return toolGroupService.getToolGroupForViewport(activeViewport.viewportId);
   }
+  function getConnectionInfo() {
+    const { cornerstoneViewport: activeViewport } = getActiveViewport();
+    const imageIds = getImageIds(activeViewport);
+    if (imageIds.length) {
+      const { StudyInstanceUID, SeriesInstanceUID } = metaData.get(
+        'instance',
+        imageIds[0]
+      );
+      const { dicomWebUrl, dicomWebSuffix } = getDicomWebClient();
+      return {
+        dicomWebUrl,
+        dicomWebSuffix,
+        StudyInstanceUID,
+        SeriesInstanceUID,
+      };
+    }
+    return;
+  }
 
-  const totalSegmentatorObject = new totalSegmentatorIntegration();
-
-  const actions = {
-    isConnected() {
-      return totalSegmentatorObject.isConnected();
-    },
-    sendToProcess() {
-      const { cornerstoneViewport: activeViewport } = getActiveViewport();
-      const imageIds = getImageIds(activeViewport);
-      if (imageIds.length) {
-        const { StudyInstanceUID, SeriesInstanceUID } = metaData.get(
-          'instance',
-          imageIds[0]
-        );
-        const { dicomWebUrl, dicomWebSuffix } = getDicomWebClient();
-        totalSegmentatorObject.sendRequest(
+  function sendRequest({
+    dicomWebUrl,
+    dicomWebSuffix,
+    StudyInstanceUID,
+    SeriesInstanceUID,
+  }) {
+    const data = new FormData();
+    data.append('server', dicomWebUrl);
+    data.append('suffix', dicomWebSuffix);
+    data.append('studyUID', StudyInstanceUID);
+    data.append('seriesUID', SeriesInstanceUID);
+    fetch('http://localhost:9000/processSeries', {
+      method: 'POST',
+      body: data,
+    }).then(res => {
+      if (res.status === 200) {
+        const info = {
           dicomWebUrl,
           dicomWebSuffix,
           StudyInstanceUID,
-          SeriesInstanceUID
+          SeriesInstanceUID,
+        };
+        getResult(info);
+      }
+    });
+  }
+
+  function getResult({
+    dicomWebUrl,
+    dicomWebSuffix,
+    StudyInstanceUID,
+    SeriesInstanceUID,
+  }) {
+    const data = new FormData();
+    data.append('server', dicomWebUrl);
+    data.append('suffix', dicomWebSuffix);
+    data.append('studyUID', StudyInstanceUID);
+    data.append('seriesUID', SeriesInstanceUID);
+    fetch('http://localhost:9000/downloadSegmentation', {
+      method: 'POST',
+      body: data,
+    })
+      .then(res => res.arrayBuffer())
+      .then(res => {
+        const dicomData = dcmjs.data.DicomMessage.readFile(res);
+        const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
+          dicomData.dict
         );
+        dataset.segArrayBuffer = res;
+        DicomMetadataStore.addInstances([dataset], true);
+      });
+  }
+
+  const actions = {
+    sendToProcess() {
+      const info = getConnectionInfo();
+      if (info) {
+        sendRequest(info);
+      }
+    },
+    downloadResult() {
+      const info = getConnectionInfo();
+      if (info) {
+        getResult(info);
       }
     },
   };
 
   const definitions = {
-    isDeepLookConnected: {
-      commandFn: actions.isConnected,
-    },
     sendToProcess: {
       commandFn: actions.sendToProcess,
     },

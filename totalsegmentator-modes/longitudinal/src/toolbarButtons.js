@@ -497,6 +497,21 @@ const toolbarButtons = [
           ],
           'Probe'
         ),
+        _createToolButton(
+          'Segment Probe',
+          'tool-probe',
+          'Segment Probe',
+          [
+            {
+              commandName: 'setToolActive',
+              commandOptions: {
+                toolName: 'SegmentProbe',
+              },
+              context: 'CORNERSTONE',
+            },
+          ],
+          'Segment Probe'
+        ),
         _createToggleButton(
           'cine',
           'tool-cine',

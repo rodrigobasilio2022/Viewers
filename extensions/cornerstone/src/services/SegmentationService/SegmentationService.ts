@@ -696,6 +696,11 @@ class SegmentationService extends PubSubService {
       // Calculate percentage completed
       const percentComplete = Math.round((numInitialized / numSegments) * 100);
 
+      segmentation.segmentLabels = {
+        ...segmentation.segmentLabels,
+        [segmentIndex]: segments[segmentIndex].label,
+      };
+
       this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
         percentComplete,
         numSegments: numSegments,
@@ -1026,6 +1031,7 @@ class SegmentationService extends PubSubService {
       id: segmentationId,
       displaySetInstanceUID,
       label: options?.label,
+      segmentLabels: {},
       // We should set it as active by default, as it created for display
       isActive: true,
       type: representationType,
@@ -2071,6 +2077,7 @@ class SegmentationService extends PubSubService {
       ...segmentation,
       activeSegmentIndex,
       cachedStats,
+      segmentLabels: {},
       displayText: [],
       id: segmentationId,
       label,
@@ -2169,7 +2176,7 @@ class SegmentationService extends PubSubService {
       segmentationId
     );
     const segmentation = this.segmentations[segmentationId];
-    const { label, cachedStats } = segmentation;
+    const { label, cachedStats, segmentLabels } = segmentation;
 
     // Update the label in the source if necessary
     if (sourceSegmentation.label !== label) {
@@ -2178,6 +2185,10 @@ class SegmentationService extends PubSubService {
 
     if (!isEqual(sourceSegmentation.cachedStats, cachedStats)) {
       sourceSegmentation.cachedStats = cachedStats;
+    }
+
+    if (!isEqual(sourceSegmentation.segmentLabels, segmentLabels)) {
+      sourceSegmentation.segmentLabels = segmentLabels;
     }
   }
 

@@ -1,5 +1,7 @@
 import { id } from './id';
 import commandsModule from './commandsModule';
+import SegmentProbeTool from './tools/SegmentProbeTool';
+import preRegistration from './init/preRegistration';
 /**
  * You can remove any of the following modules if you don't need them.
  */
@@ -16,11 +18,7 @@ export default {
    * (e.g. cornerstone, cornerstoneTools, ...) or registering any services that
    * this extension is providing.
    */
-  preRegistration: ({
-    servicesManager,
-    commandsManager,
-    configuration = {},
-  }) => {},
+  preRegistration,
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,
@@ -132,3 +130,5 @@ export default {
     extensionManager,
   }) => {},
 };
+
+export { SegmentProbeTool };

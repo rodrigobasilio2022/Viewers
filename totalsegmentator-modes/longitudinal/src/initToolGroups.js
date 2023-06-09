@@ -1,3 +1,5 @@
+import { SegmentProbeTool } from '@totalsegmentator/default';
+
 function initDefaultToolGroup(
   extensionManager,
   toolGroupService,
@@ -31,6 +33,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: SegmentProbeTool.toolName },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
@@ -174,6 +177,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: SegmentProbeTool.toolName },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },

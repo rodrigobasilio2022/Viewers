@@ -2,9 +2,10 @@ import { Types as OhifTypes } from '@ohif/core';
 import deepLookIntegration from './helpers/deepLookIntegration';
 import { metaData, cache, StackViewport } from '@cornerstonejs/core';
 import deepLookMouseBindings from './mouseBindings';
+import { vec3 } from 'gl-matrix';
 
 const defaultContext = 'CORNERSTONE';
-const oldCalculation = true;
+const oldCalculation = false;
 
 const commandsModule = ({
   servicesManager,
@@ -87,22 +88,11 @@ const commandsModule = ({
       }
       return { insideImageFrame: 0, pixelMM: 0 };
     } else {
-      const imageIds = getImageIds(activeViewport);
-      let imagePlaneModule;
-      if (imageIds && imageIds.length > 0) {
-        imagePlaneModule = metaData.get('imagePlaneModule', imageIds[0]);
-      }
-      const worldPos = activeViewport.canvasToWorld([xPos, yPos]);
-      const orientation = getOrientation(activeViewport);
-      if (orientation === 0) {
-        worldPos[1] = worldPos[1] + 1;
-      } else {
-        worldPos[0] = worldPos[0] + 1;
-      }
-      const canvasPos = activeViewport.worldToCanvas(worldPos);
-      const pixelMM = Math.ceil(
-        Math.max(Math.abs(canvasPos[0] - xPos), Math.abs(canvasPos[1] - yPos))
-      );
+      const worldPos1 = activeViewport.canvasToWorld([0, 100]);
+      const worldPos2 = activeViewport.canvasToWorld([0, 200]);
+      const distance = vec3.distance(worldPos1, worldPos2);
+      const pixelMM = Math.ceil((1 / distance) * 100000);
+      console.log('PixelMM returned: ', pixelMM, ' Distance: ', distance);
       return {
         insideImageFrame: 1,
         pixelMM,

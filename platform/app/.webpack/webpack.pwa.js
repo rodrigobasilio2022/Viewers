@@ -54,7 +54,7 @@ module.exports = (env, argv) => {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-      devtoolModuleFilenameTemplate: function(info) {
+      devtoolModuleFilenameTemplate: function (info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
         } else {
@@ -71,23 +71,11 @@ module.exports = (env, argv) => {
         SRC_DIR,
         path.resolve(
           __dirname,
-          'D:CodigosOHIFDeeplookViewers\totalsegmentator-extensiondefault\node_modules'
+          'totalsegmentator-extensiondefault/node_modules'
         ),
         path.resolve(
           __dirname,
-          'totalsegmentator-extensiondefault\node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          'totalsegmentator-modeslongitudinal\node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          'totalsegmentator-modeslongitudinal\node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          'totalsegmentator-extensiondefault\node_modules'
+          'totalsegmentator-modeslongitudinal/node_modules'
         ),
       ],
     },

@@ -398,6 +398,7 @@ export default function ModeRoute({
         mode?.onModeExit?.({
           servicesManager,
           extensionManager,
+          commandsManager,
         });
       } catch (e) {
         console.warn('mode exit failure', e);

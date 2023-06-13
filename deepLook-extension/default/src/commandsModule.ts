@@ -3,6 +3,7 @@ import deepLookIntegration from './helpers/deepLookIntegration';
 import { metaData, cache, StackViewport } from '@cornerstonejs/core';
 import deepLookMouseBindings from './mouseBindings';
 import { vec3 } from 'gl-matrix';
+import openURL from './helpers/openURL';
 
 const defaultContext = 'CORNERSTONE';
 const oldCalculation = false;
@@ -108,12 +109,16 @@ const commandsModule = ({
     }
   }
 
+  function callLink(deepLookURL) {
+    const link = document.createElement('a');
+    link.href = deepLookURL;
+    link.click();
+  }
   function callDeepLookURL() {
     if (!deepLookIntegrationObject.isConnected()) {
-      const deepLookURL = 'deeplook://open';
-      const link = document.createElement('a');
-      link.href = deepLookURL;
-      link.click();
+      openURL('deeplook://open', () => {
+        window.open('/installer.html', '_blank');
+      });
     }
   }
 
@@ -199,6 +204,12 @@ const commandsModule = ({
     isDeepLookConnected() {
       return deepLookIntegrationObject.isConnected();
     },
+    openDeepLookURL() {
+      checkDeepLookIsOpened();
+    },
+    closeDeepLookURL() {
+      callLink('deeplook://close');
+    },
   };
 
   const definitions = {
@@ -208,10 +219,15 @@ const commandsModule = ({
     isDeepLookConnected: {
       commandFn: actions.isDeepLookConnected,
     },
+    openDeepLookURL: {
+      commandFn: actions.openDeepLookURL,
+    },
+    closeDeepLookURL: {
+      commandFn: actions.closeDeepLookURL,
+    },
   };
-  checkDeepLookIsOpened();
+  //checkDeepLookIsOpened();
   checkConnection();
-
   return { actions, defaultContext, definitions };
 };
 

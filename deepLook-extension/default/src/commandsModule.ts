@@ -6,7 +6,7 @@ import { vec3 } from 'gl-matrix';
 import openURL from './helpers/openURL';
 
 const defaultContext = 'CORNERSTONE';
-
+const numberOfTries = 3;
 const commandsModule = ({
   servicesManager,
   commandsManager,
@@ -20,6 +20,7 @@ const commandsModule = ({
     uiNotificationService,
   } = servicesManager.services;
   let lastToolNameDisabled;
+  let nTries = numberOfTries;
 
   /**
    * Gets the imageIds list based on the type of the viewport
@@ -89,7 +90,9 @@ const commandsModule = ({
   function callDeepLookURL() {
     if (!deepLookIntegrationObject.isConnected()) {
       openURL('deeplook://open', () => {
-        window.open('/installer.html', '_blank');
+        if (!deepLookIntegrationObject.isConnected()) {
+          window.open('/installer.html', '_blank');
+        }
       });
     }
   }
@@ -103,6 +106,14 @@ const commandsModule = ({
   function _checkConnection() {
     if (!deepLookIntegrationObject.isConnected()) {
       deepLookIntegrationObject.openWebSocket();
+      if (nTries === 0) {
+        callDeepLookURL();
+        nTries = numberOfTries;
+      } else {
+        nTries -= 1;
+      }
+    } else {
+      nTries = numberOfTries;
     }
     setTimeout(() => {
       checkConnection();
@@ -170,14 +181,8 @@ const commandsModule = ({
   );
 
   const actions = {
-    openDeepLook() {
-      checkDeepLookIsOpened();
-    },
     isDeepLookConnected() {
       return deepLookIntegrationObject.isConnected();
-    },
-    openDeepLookURL() {
-      checkDeepLookIsOpened();
     },
     closeDeepLookURL() {
       callLink('deeplook://close');
@@ -185,20 +190,14 @@ const commandsModule = ({
   };
 
   const definitions = {
-    openDeepLook: {
-      commandFn: actions.openDeepLook,
-    },
     isDeepLookConnected: {
       commandFn: actions.isDeepLookConnected,
-    },
-    openDeepLookURL: {
-      commandFn: actions.openDeepLookURL,
     },
     closeDeepLookURL: {
       commandFn: actions.closeDeepLookURL,
     },
   };
-  checkDeepLookIsOpened();
+
   checkConnection();
   return { actions, defaultContext, definitions };
 };

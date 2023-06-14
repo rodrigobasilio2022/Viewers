@@ -21,6 +21,7 @@ class deepLookIntegration {
     this.openCallback = openCallback;
     this.errorCallback = errorCallback;
     this.closeCallback = closeCallback;
+    this.webSocket = undefined;
   }
 
   getXML(elementTag, xml) {
@@ -84,6 +85,9 @@ class deepLookIntegration {
   }
 
   openWebSocket() {
+    if (this.isConnected()) {
+      return;
+    }
     this.webSocket = new WebSocket('ws://' + this.serverIp + ':44458');
     if (!this.webSocket) {
       this.connectionStatus(false, 'Could not open a connection to DeepLook');
@@ -131,6 +135,7 @@ class deepLookIntegration {
     if (this.isConnected()) {
       this.safeCloseWebSocket = true;
       this.webSocket.close();
+      this.webSocket = undefined;
     }
   }
 }

@@ -130,7 +130,7 @@ function modeFactory() {
         'Crosshairs',
         'MoreTools',
       ]);
-      commandsManager.runCommand('openDeepLookURL', {});
+      //commandsManager.runCommand('openDeepLookURL', {});
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
@@ -163,7 +163,7 @@ function modeFactory() {
         cornerstoneViewportService,
       } = servicesManager.services;
 
-      commandsManager.runCommand('closeDeepLookURL', {});
+      //commandsManager.runCommand('closeDeepLookURL', {});
       _activatePanelTriggersSubscriptions.forEach(sub => sub.unsubscribe());
       _activatePanelTriggersSubscriptions = [];
 

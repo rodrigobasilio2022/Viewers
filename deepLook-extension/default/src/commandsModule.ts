@@ -6,7 +6,6 @@ import { vec3 } from 'gl-matrix';
 import openURL from './helpers/openURL';
 
 const defaultContext = 'CORNERSTONE';
-const oldCalculation = false;
 
 const commandsModule = ({
   servicesManager,
@@ -60,49 +59,22 @@ const commandsModule = ({
     };
   }
 
-  function getOrientation(viewport) {
-    const normalVector = viewport.getCamera().viewPlaneNormal;
-    let largestAxis = 0;
-    for (let i = 1; i < normalVector.length; i++) {
-      if (Math.abs(normalVector[i]) > Math.abs(normalVector[largestAxis])) {
-        largestAxis = i;
-      }
-    }
-    return largestAxis;
-  }
-
   function getPixelMM(xPos, yPos) {
     const { cornerstoneViewport: activeViewport } = getActiveViewport();
-    if (oldCalculation) {
-      const imageIds = getImageIds(activeViewport);
-      if (imageIds && imageIds.length > 0) {
-        const imagePlaneModule = metaData.get('imagePlaneModule', imageIds[0]);
-        const zoom = activeViewport.getZoom();
-        const pixelMMDicom = 1 / imagePlaneModule.pixelSpacing[0];
-        const pixelMMScreen = pixelMMDicom / zoom;
-        const pixelMM = Math.ceil(pixelMMScreen * 100000);
-        console.log('PixelMM returned: ', pixelMMScreen);
-        return {
-          insideImageFrame: 1,
-          pixelMM,
-        };
-      }
-      return { insideImageFrame: 0, pixelMM: 0 };
-    } else {
-      const worldPos1 = activeViewport.canvasToWorld([0, 100]);
-      const worldPos2 = activeViewport.canvasToWorld([0, 200]);
-      const distance = vec3.distance(worldPos1, worldPos2);
-      const pixelMM = Math.ceil((1 / distance) * 100000);
-      console.log('PixelMM returned: ', pixelMM, ' Distance: ', distance);
-      return {
-        insideImageFrame: 1,
-        pixelMM,
-      };
-    }
+    const worldPos1 = activeViewport.canvasToWorld([0, 100]);
+    const worldPos2 = activeViewport.canvasToWorld([0, 200]);
+    const distance = vec3.distance(worldPos1, worldPos2);
+    const pixelMM = Math.ceil((1 / distance) * 100000);
+    console.log('PixelMM returned: ', pixelMM, ' Distance: ', distance);
+    return {
+      insideImageFrame: 1,
+      pixelMM,
+    };
   }
 
   function checkDeepLookIsOpened() {
     if (!deepLookIntegrationObject.isConnected()) {
+      deepLookIntegrationObject.openWebSocket();
       setTimeout(() => {
         callDeepLookURL();
       }, 3000);
@@ -226,7 +198,7 @@ const commandsModule = ({
       commandFn: actions.closeDeepLookURL,
     },
   };
-  //checkDeepLookIsOpened();
+  checkDeepLookIsOpened();
   checkConnection();
   return { actions, defaultContext, definitions };
 };

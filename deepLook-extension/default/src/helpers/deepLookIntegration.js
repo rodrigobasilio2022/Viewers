@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+const resetCommand = 3; // turns off massView and clears any overlays,  used when DICOM image size is magnified or un-magnified, changed, moved, or current display is left.
+const closeCommand = 4; // causes dlPrecise to exit and stop running
+const heartBeatCommand = 5; // keeps dlPrecise from “exiting and stop running” because of non-use.
+
 class deepLookIntegration {
   serverIp;
   constructor(
@@ -24,6 +29,12 @@ class deepLookIntegration {
     this.webSocket = undefined;
   }
 
+  /**
+   * This function decodes a xml message received from DLPrecise
+   * @param {*} elementTag that to be decoded
+   * @param {*} xml        xml message
+   * @returns
+   */
   getXML(elementTag, xml) {
     let startTag = '<' + elementTag + '>';
     let endTag = '</' + elementTag + '>';
@@ -33,6 +44,10 @@ class deepLookIntegration {
     return xml.substring(elementStart, elementEnd);
   }
 
+  /**
+   * Process the messages received from DLPrecise
+   * @param {*} event
+   */
   processMessages(event) {
     let lesionMatchXML = event.data;
 
@@ -79,11 +94,53 @@ class deepLookIntegration {
     this.webSocket.send(params);
   }
 
+  /**
+   * Send to DLPrecise a command to reset overlays
+   */
+  resetDLPrecise() {
+    if (this.isConnected()) {
+      const params = new Uint32Array(1);
+      params[0] = resetCommand;
+      this.webSocket.send(params);
+    }
+  }
+
+  /**
+   * Send to DLPrecise a command to close itself
+   */
+  closeDLPrecise() {
+    if (this.isConnected()) {
+      const params = new Uint32Array(1);
+      params[0] = closeCommand;
+      this.webSocket.send(params);
+    }
+  }
+
+  /**
+   * Send to DLPrecise an heartbeat pulse, indicating that OHIF and the connection is active
+   */
+  heartBeat() {
+    if (this.isConnected()) {
+      const params = new Uint32Array(1);
+      params[0] = heartBeatCommand;
+      this.webSocket.send(params);
+    }
+  }
+
+  /**
+   * This function logs messages
+   * @param {*} isInfoMessage
+   * @param {*} message
+   */
   processLog(isInfoMessage, message) {
     console.log(message);
     this.connectionStatus(isInfoMessage, message);
   }
 
+  /**
+   * This function connects to DLPrecise local websocket server and adds all necessary listeners
+   * @returns
+   */
   openWebSocket() {
     if (this.isConnected()) {
       return;
@@ -127,10 +184,18 @@ class deepLookIntegration {
     });
   }
 
+  /**
+   * This function checks if the websocket connection is alive, by checking
+   * the state of the websocket
+   * @returns
+   */
   isConnected() {
     return this.webSocket && this.webSocket.readyState === WebSocket.OPEN;
   }
 
+  /**
+   * This function closes the websocket
+   */
   closeWebSocket() {
     if (this.isConnected()) {
       this.safeCloseWebSocket = true;

@@ -1,3 +1,4 @@
+import { RuntimeExtension } from 'flexview-runtime-extension';
 import { id } from './id';
 import DeepLookTool from './tools/deepLookTool';
 import preRegistration from './init/preRegistration';
@@ -132,7 +133,18 @@ const deepLookExtension: Types.Extensions.Extension = {
     commandsManager,
     extensionManager,
   }) => {},
+  inject: () => {},
 };
 
 export { DeepLookTool, deepLookMouseBindings };
-export default deepLookExtension;
+const deeplookRuntimeExtension = new RuntimeExtension(deepLookExtension, 
+  [
+  {
+    modeId: 'flexview-runtime-mode-tmtv',
+    routePath: 'longitudinal',
+    leftPanels: [],
+    rightPanels: [],
+    viewports: [],
+  }]
+);
+export default deeplookRuntimeExtension;

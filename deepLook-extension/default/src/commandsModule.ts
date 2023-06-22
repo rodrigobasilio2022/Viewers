@@ -1,9 +1,10 @@
-import { Types as OhifTypes } from '@ohif/core';
 import deepLookIntegration from './helpers/deepLookIntegration';
-import { metaData, cache, StackViewport } from '@cornerstonejs/core';
 import deepLookMouseBindings from './mouseBindings';
-import { vec3 } from 'gl-matrix';
 import openURL from './helpers/openURL';
+
+const { metaData, cache, StackViewport } = window.sharedLibraries['@cornerstonejs/core'];
+const { Types : OhifTypes } = window.sharedLibraries['@ohif/core'];
+const { vec3 } = window.sharedLibraries['gl-matrix'];
 
 const defaultContext = 'CORNERSTONE';
 const numberOfTries = 3;
@@ -91,7 +92,7 @@ const commandsModule = ({
     if (!deepLookIntegrationObject.isConnected()) {
       openURL('deeplook://open', () => {
         if (!deepLookIntegrationObject.isConnected()) {
-          window.open('/installer.html', '_blank');
+          window.open('https://emory.deeplook-medical.com/installer.html', '_blank');
         }
       });
     }

@@ -1,7 +1,8 @@
-import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
+
+const { hotkeys } = window.sharedLibraries['@ohif/core'];
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -70,7 +71,7 @@ function modeFactory() {
     // We should not be.
     id,
     routeName: 'viewer',
-    displayName: 'Basic Viewer',
+    displayName: 'DeepLook Mode',
     /**
      * Lifecycle hooks
      */

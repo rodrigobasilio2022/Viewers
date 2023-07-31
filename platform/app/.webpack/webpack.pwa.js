@@ -71,11 +71,7 @@ module.exports = (env, argv) => {
         SRC_DIR,
         path.resolve(
           __dirname,
-          'totalsegmentator-extensiondefault/node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          'totalsegmentator-modeslongitudinal/node_modules'
+          '../../../totalsegmentator-extension/default/node_modules'
         ),
       ],
     },

@@ -1,14 +1,10 @@
-import { cache, Types, VolumeViewport } from '@cornerstonejs/core';
+const { Types } = window.sharedLibraries['@cornerstonejs/core'];
 
-import {
-  Types as csToolsTypes,
+const {
+  Types : csToolsTypes,
   drawing,
-  BaseTool,
   AnnotationTool,
-  Enums,
-  ToolGroupManager,
-  segmentation as Segmentation,
-} from '@cornerstonejs/tools';
+} = window.sharedLibraries['@cornerstonejs/tools'];
 
 const { drawLine, drawTextBox: drawTextBoxSvg } = drawing;
 

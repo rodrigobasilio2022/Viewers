@@ -70,6 +70,7 @@ module.exports = (env, argv) => {
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
         path.resolve(__dirname, '../../../modes/mobile/node_modules'),
+        path.resolve(__dirname, '../../../extensions/temporary-mobile-extension/node_modules'),
       ],
     },
     plugins: [

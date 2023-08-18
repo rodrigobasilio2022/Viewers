@@ -24,7 +24,7 @@ function initDefaultToolGroup(
         toolName: toolNames.Zoom,
         bindings: [{ numTouchPoints: 2 }],
       },
-      { toolName: toolNames.StackScroll, bindings: [{ numTouchPoints: 3 }] },
+      { toolName: 'StackScrollMobile', bindings: [{ numTouchPoints: 3 }] },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -34,7 +34,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
+      { toolName: 'StackScrollMobile' },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
@@ -48,6 +48,19 @@ function initDefaultToolGroup(
   };
 
   const toolsConfig = {
+    ['StackScrollMobile']: {
+      lrChangeCallback: (deltaXOffset) => {
+        if (deltaXOffset < 0) {
+          commandsManager.runCommand('updateViewportDisplaySet', {
+            direction: -1,
+          });
+        } else {
+          commandsManager.runCommand('updateViewportDisplaySet', {
+            direction: 1,
+          });
+        }
+      }
+    },
     [toolNames.ArrowAnnotate]: {
       getTextCallback: (callback, eventDetails) =>
         commandsManager.runCommand('arrowTextCallback', {
@@ -105,8 +118,8 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
         ],
       },
       {
-        toolName: toolNames.StackScrollMouseWheel,
-        bindings: [],
+        toolName: 'StackScrollMobile',
+        bindings: [{ numTouchPoints: 3 }],
       },
     ],
     passive: [
@@ -126,6 +139,15 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
   };
 
   const toolsConfig = {
+    ['StackScrollMobile']: {
+      lrChangeCallback: (deltaXOffset) => {
+        if (deltaXOffset < 0) {
+          commandsManager.runCommand('previousViewportDisplaySet', {});
+        } else {
+          commandsManager.runCommand('nextViewportDisplaySet', {});
+        }
+      }
+    },
     [toolNames.ArrowAnnotate]: {
       getTextCallback: (callback, eventDetails) =>
         commandsManager.runCommand('arrowTextCallback', {
@@ -167,7 +189,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      { toolName: 'StackScrollMobile', bindings: [{ numTouchPoints: 3 }] },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -177,7 +199,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
+      { toolName: 'StackScrollMobile' },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
@@ -193,6 +215,16 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   };
 
   const toolsConfig = {
+    ['StackScrollMobile']: {
+      lrChangeCallback: (deltaXOffset) => {
+        if (deltaXOffset < 0) {
+          commandsManager.runCommand('previousViewportDisplaySet', {});
+        } else {
+          commandsManager.runCommand('nextViewportDisplaySet', {});
+        }
+      }
+    },
+
     [toolNames.Crosshairs]: {
       viewportIndicators: false,
       autoPan: {

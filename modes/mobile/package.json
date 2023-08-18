@@ -1,5 +1,5 @@
 {
-  "name": "mobile",
+  "name": "temporary-mobile",
   "version": "0.0.1",
   "description": "New mode adapted for mobile access",
   "author": "Rodrigo Basilio",
@@ -33,7 +33,8 @@
     "@ohif/core": "^3.0.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13"
+    "@babel/runtime": "^7.20.13",
+    "flexview-runtime-extension": "^0.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",

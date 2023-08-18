@@ -1,7 +1,8 @@
-import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons.js';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
+import RuntimeExtension from 'flexview-runtime-extension';
+const { hotkeys } = window.sharedLibraries['@ohif/core'];
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -17,8 +18,7 @@ const tracked = {
   measurements:
     '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport:
-    '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  viewport: '@flexview/flexview-extension.viewportModule.flexview',
 };
 
 const dicomsr = {
@@ -194,7 +194,7 @@ function modeFactory({ modeConfiguration }) {
         },*/
         layoutTemplate: () => {
           return {
-            id: ohif.layout,
+            id: '@flexview/flexview-extension.layoutTemplateModule.viewerLayout',
             props: {
               leftPanels: [ohif.thumbnailList],
               rightPanels: [],//[dicomSeg.panel, tracked.measurements],

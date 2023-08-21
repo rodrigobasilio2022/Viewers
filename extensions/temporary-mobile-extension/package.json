@@ -1,6 +1,6 @@
 {
   "name": "temporary-mobile-extension",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "OHIF extension for mobiles",
   "author": "Rodrigo Basilio",
   "license": "MIT",
@@ -42,7 +42,8 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@babel/runtime": "^7.20.13"
+    "@babel/runtime": "^7.20.13",
+    "flexview-runtime-extension": "^0.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",

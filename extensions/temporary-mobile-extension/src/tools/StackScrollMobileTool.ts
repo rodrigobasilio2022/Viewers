@@ -1,16 +1,18 @@
-import {
+const {
   getEnabledElementByIds,
   VolumeViewport,
   StackViewport,
-  utilities as csUtils,
-} from '@cornerstonejs/core';
-import {
-  BaseTool,
-  utilities as cstUtils,
-  Types
-} from '@cornerstonejs/tools';
+  utilities : csUtils,
+} = window.sharedLibraries['@cornerstonejs/core'];
 
-const minShift = 10;
+const {
+  BaseTool,
+  utilities : cstUtils,
+} = window.sharedLibraries['@cornerstonejs/tools'];
+
+const Types = window.sharedLibraries['@cornerstonejs/tools'].Types;
+
+const minShift = 50;
 /**
  * The StackScrollTool is a tool that allows the user to scroll through a
  * stack of images by pressing the mouse click and dragging

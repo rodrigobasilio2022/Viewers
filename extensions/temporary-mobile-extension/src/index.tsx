@@ -1,11 +1,13 @@
 import { id } from './id';
-import {addTool} from '@cornerstonejs/tools';
+const { addTool } = window.sharedLibraries['@cornerstonejs/tools'];
 import StackScrollMobileTool from './tools/StackScrollMobileTool';
+import RuntimeExtension from 'flexview-runtime-extension';
+const { Types } =  window.sharedLibraries['@ohif/core'];
 
 /**
  * You can remove any of the following modules if you don't need them.
  */
-export default {
+const mobileExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    * You ID can be anything you want, but it should be unique.
@@ -128,3 +130,5 @@ export default {
     extensionManager,
   }) => {},
 };
+
+export default new RuntimeExtension(mobileExtension, [])

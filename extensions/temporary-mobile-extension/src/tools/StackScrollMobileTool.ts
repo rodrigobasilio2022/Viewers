@@ -10,15 +10,16 @@ import {
   Types
 } from '@cornerstonejs/tools';
 
+const minShift = 10;
 /**
  * The StackScrollTool is a tool that allows the user to scroll through a
  * stack of images by pressing the mouse click and dragging
  */
 class StackScrollMobileTool extends BaseTool {
   static toolName;
-  deltaX: number;
   deltaY: number;
   mouseReleased: boolean;
+  initialMousePos;
   constructor(
     toolProps: Types.PublicToolProps = {},
     defaultToolProps: Types.ToolProps = {
@@ -32,9 +33,7 @@ class StackScrollMobileTool extends BaseTool {
     }
   ) {
     super(toolProps, defaultToolProps);
-    this.deltaX = 1;
     this.deltaY = 1;
-    this.mouseReleased = true;
   }
 
   mouseDragCallback(evt: Types.EventTypes.InteractionEventType) {
@@ -44,25 +43,18 @@ class StackScrollMobileTool extends BaseTool {
     this._dragCallback(evt);
   }
 
-  touchEndCallback(evt: Types.EventTypes.InteractionEventType) {
-    this.mouseReleased = true;
-    this.deltaX = 1;
-  }
-
-  mouseUpCallback(evt: Types.EventTypes.InteractionEventType) {
-    this.mouseReleased = true;
-    this.deltaX = 1;
-  }
 
   _dragCallback(evt: Types.EventTypes.InteractionEventType) {
-    const { deltaPoints, viewportId, renderingEngineId } = evt.detail;
+    const { deltaPoints, viewportId, renderingEngineId, currentPoints } = evt.detail;
     const { viewport } = getEnabledElementByIds(viewportId, renderingEngineId);
 
     const targetId = this.getTargetId(viewport);
     const { debounceIfNotLoaded, invert, loop } = this.configuration;
 
-    //alert('Delta Points: ' + deltaPoints.canvas);
-    const deltaPointX = deltaPoints.canvas[0];
+    if (!this.initialMousePos) {
+      this.initialMousePos = currentPoints.canvas;
+    }
+    const deltaXOffset = currentPoints.canvas[0] - this.initialMousePos[0];
     const deltaPointY = deltaPoints.canvas[1];
 
     let volumeId;
@@ -71,7 +63,6 @@ class StackScrollMobileTool extends BaseTool {
     }
 
     const pixelsPerImage = this._getPixelPerImage(viewport);
-    const deltaX = deltaPointX + this.deltaX;
     const deltaY = deltaPointY + this.deltaY;
 
     if (!pixelsPerImage) {
@@ -93,17 +84,11 @@ class StackScrollMobileTool extends BaseTool {
       this.deltaY = deltaY;
     }
 
-    if (this.mouseReleased) {
-      if (Math.abs(deltaX) >= pixelsPerImage) {
-        const deltaXOffset = Math.round(deltaX / pixelsPerImage);
+    if (Math.abs(deltaXOffset) > minShift) {
         if (this.configuration.lrChangeCallback) {
           this.configuration.lrChangeCallback(deltaXOffset);
         }
-        this.deltaX = deltaX % pixelsPerImage;
-        this.mouseReleased = false;
-      } else {
-        this.deltaX = deltaX;
-      }
+        this.initialMousePos = undefined;
     }
   }
 

@@ -3,6 +3,7 @@ const { addTool } = window.sharedLibraries['@cornerstonejs/tools'];
 import StackScrollMobileTool from './tools/StackScrollMobileTool';
 import RuntimeExtension from 'flexview-runtime-extension';
 const { Types } =  window.sharedLibraries['@ohif/core'];
+import getLayoutTemplateModule from './getLayoutTemplateModule';
 
 /**
  * You can remove any of the following modules if you don't need them.
@@ -68,11 +69,7 @@ const mobileExtension: Types.Extensions.Extension = {
    * a Header, left and right sidebars, and a viewport section in the middle
    * of the viewer.
    */
-  getLayoutTemplateModule: ({
-    servicesManager,
-    commandsManager,
-    extensionManager,
-  }) => {},
+  getLayoutTemplateModule,
   /**
    * SopClassHandlerModule should provide a list of sop class handlers that will be
    * available in OHIF for Modes to consume and use to create displaySets from Series.

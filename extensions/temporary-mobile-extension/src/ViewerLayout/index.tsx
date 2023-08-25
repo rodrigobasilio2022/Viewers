@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router';
+const React = window.sharedLibraries['react'];
+const { useEffect, useState } = React;
+const PropTypes = window.sharedLibraries['prop-types'];
+const { useNavigate } = window.sharedLibraries['react-router-dom'];
+const { useTranslation } = window.sharedLibraries['react-i18next'];
+const { useLocation } = window.sharedLibraries['react-router'];
 
-import {
+const {
   SidePanel,
   ErrorBoundary,
   UserPreferences,
@@ -13,19 +14,17 @@ import {
   LoadingIndicatorProgress,
   useCine,
   Dialog,
-} from '@ohif/ui';
-import i18n from '@ohif/i18n';
-import {
+} = window.sharedLibraries['@ohif/ui'];
+const i18n = window.sharedLibraries['@ohif/i18n'];
+const {
   ServicesManager,
   HangingProtocolService,
   hotkeys,
   CommandsManager,
-} from '@ohif/core';
-import { useAppConfig } from '@state';
-import { Toolbar } from '@ohif/extension-default';
+} = window.sharedLibraries['@ohif/core'];
 import Header from './Header';
 
-//const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 function ViewerLayout({
   // From Extension Module Params
@@ -41,7 +40,6 @@ function ViewerLayout({
   leftPanelDefaultClosed = window?.config?.leftPanelDefaultClosed,
   rightPanelDefaultClosed = true,
 }): React.FunctionComponent {
-  const [appConfig] = useAppConfig();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -58,7 +56,7 @@ function ViewerLayout({
   const { show, hide } = useModal();
 
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(
-    appConfig.showLoadingIndicator
+    window?.config?.showLoadingIndicator
   );
 
   const { hangingProtocolService } = servicesManager.services;
@@ -99,7 +97,7 @@ function ViewerLayout({
 
   window?.parent?.postMessage({ msg: 'show-preferences' }, '*');
 
-  if (appConfig.oidc) {
+  if (window?.config?.oidc) {
     menuOptions.push({
       title: t('Header:Logout'),
       icon: 'power-off',
@@ -242,17 +240,12 @@ function ViewerLayout({
     <div>
       <Header
         menuOptions={menuOptions}
-        isReturnEnabled={!!appConfig.showStudyList}
+        isReturnEnabled={!!window?.config?.showStudyList}
         onClickReturnButton={onClickReturnButton}
-        whiteLabeling={appConfig.whiteLabeling}
+        whiteLabeling={window?.config?.whiteLabeling}
         servicesManager={servicesManager}
-        isReturnEnabled={!!appConfig.showStudyList}
+        isReturnEnabled={!!window?.config?.showStudyList}
       >
-        <ErrorBoundary context="Primary Toolbar">
-          <div className="relative flex justify-center">
-            <Toolbar servicesManager={servicesManager} />
-          </div>
-        </ErrorBoundary>
       </Header>
       <div
         className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"

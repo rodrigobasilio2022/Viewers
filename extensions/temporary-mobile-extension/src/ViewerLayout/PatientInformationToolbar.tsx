@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { utils } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui';
+const React = window.sharedLibraries['react'];
+const { useEffect, useState } = React;
+const { utils } = window.sharedLibraries['@ohif/core'];
+const { useViewportGrid } = window.sharedLibraries['@ohif/ui'];
 
 export default function OHIFCornerstoneSEGViewport(props) {
   const { servicesManager } = props;

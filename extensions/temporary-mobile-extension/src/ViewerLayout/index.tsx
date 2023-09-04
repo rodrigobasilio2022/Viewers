@@ -1,9 +1,7 @@
 const React = window.sharedLibraries['react'];
 const { useEffect, useState } = React;
 const PropTypes = window.sharedLibraries['prop-types'];
-const { useNavigate } = window.sharedLibraries['react-router-dom'];
 const { useTranslation } = window.sharedLibraries['react-i18next'];
-const { useLocation } = window.sharedLibraries['react-router'];
 
 const {
   SidePanel,
@@ -15,7 +13,6 @@ const {
   useCine,
   Dialog,
 } = window.sharedLibraries['@ohif/ui'];
-const i18n = window.sharedLibraries['@ohif/i18n'];
 const {
   ServicesManager,
   HangingProtocolService,
@@ -23,8 +20,6 @@ const {
   CommandsManager,
 } = window.sharedLibraries['@ohif/core'];
 import Header from './Header';
-
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 function ViewerLayout({
   // From Extension Module Params
@@ -40,17 +35,6 @@ function ViewerLayout({
   leftPanelDefaultClosed = window?.config?.leftPanelDefaultClosed,
   rightPanelDefaultClosed = true,
 }): React.FunctionComponent {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const onClickReturnButton = () => {
-    commandsManager.runCommand('executeNavigation', {
-      commandsManager,
-      servicesManager,
-      navigate,
-      location,
-    });
-  };
 
   const { t } = useTranslation();
   const { show, hide } = useModal();
@@ -65,49 +49,10 @@ function ViewerLayout({
   const versionNumber = process.env.VERSION_NUMBER;
   const buildNumber = process.env.BUILD_NUM;
 
-  const openPreferences = () => {
-    show({
-      title: t('UserPreferencesModal:User Preferences'),
-      content: UserPreferences,
-      contentProps: {
-        hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
-          hotkeyDefaults
-        ),
-        hotkeyDefinitions,
-        currentLanguage: currentLanguage(),
-        availableLanguages,
-        defaultLanguage,
-        onCancel: () => {
-          hotkeys.stopRecord();
-          hotkeys.unpause();
-          hide();
-        },
-        onSubmit: ({ hotkeyDefinitions, language }) => {
-          i18n.changeLanguage(language.value);
-          hotkeysManager.setHotkeys(hotkeyDefinitions);
-          hide();
-        },
-        onReset: () => hotkeysManager.restoreDefaultBindings(),
-        hotkeysModule: hotkeys,
-      },
-    });
-  };
 
   const menuOptions = [];
 
   window?.parent?.postMessage({ msg: 'show-preferences' }, '*');
-
-  if (window?.config?.oidc) {
-    menuOptions.push({
-      title: t('Header:Logout'),
-      icon: 'power-off',
-      onClick: async () => {
-        navigate(
-          `/logout?redirect_uri=${encodeURIComponent(window.location.href)}`
-        );
-      },
-    });
-  }
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -120,11 +65,6 @@ function ViewerLayout({
 
     function onMessage(event) {
       return;
-      switch (event?.data?.msg) {
-        case 'flexviewOpenPreferences': {
-          openPreferences();
-        }
-      }
     }
     window.addEventListener('message', onMessage, false);
     return () => {
@@ -240,8 +180,7 @@ function ViewerLayout({
     <div>
       <Header
         menuOptions={menuOptions}
-        isReturnEnabled={!!window?.config?.showStudyList}
-        onClickReturnButton={onClickReturnButton}
+        onClickReturnButton={undefined}
         whiteLabeling={window?.config?.whiteLabeling}
         servicesManager={servicesManager}
         isReturnEnabled={!!window?.config?.showStudyList}

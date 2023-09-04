@@ -2,7 +2,7 @@ const React = window.sharedLibraries['react'];
 const PropTypes = window.sharedLibraries['prop-types'];
 const { useTranslation } = window.sharedLibraries['react-i18next'];
 const classNames = window.sharedLibraries['classnames'];
-const { NavBar, Icon, IconButton, Dropdown } = window.sharedLibraries['@ohif/ui]'];
+const { NavBar, Icon, IconButton, Dropdown } = window.sharedLibraries['@ohif/ui'];
 
 function Header({
   children,

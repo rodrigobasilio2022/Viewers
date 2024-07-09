@@ -69,6 +69,7 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(__dirname, 'registration-extensions/default/node_modules'),
       ],
     },
     plugins: [

@@ -112,6 +112,14 @@ const moreTools = [
           evaluate: 'evaluate.viewportProperties.toggle',
         }),
         createButton({
+          id: 'pairingSeries',
+          icon: 'layout-common-1x2',
+          label: 'Pair viewports',
+          tooltip: 'Pair opened viewports',
+          commands: 'executeSeriesPairingWithOpenedViewports',
+          evaluate: 'evaluate.viewportProperties.toggle',
+        }),
+        createButton({
           id: 'Probe',
           icon: 'tool-probe',
           label: 'Probe',
